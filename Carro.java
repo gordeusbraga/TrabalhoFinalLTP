@@ -12,7 +12,7 @@ public class Carro {
 	String marca;
 	String modelo;
 	char fabricacao;
-	String origemMarca = "JAPÃO";
+	String origemMarca;
 	String categoria;
 	float motorizacao;
 	int potencia;
@@ -24,11 +24,11 @@ public class Carro {
 		// metodo para localizar um registro no arquivo em disco
 		long posicaoCursorArquivo = 0;
 		try {
-			
+
 			RandomAccessFile arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
-		   
+
 			while (true) {
-				
+
 				posicaoCursorArquivo = arquivoCarro.getFilePointer(); // posicao do inicio do registro no arquivo
 				ativo       = arquivoCarro.readChar();
 				codCarro    = arquivoCarro.readUTF();
@@ -95,18 +95,36 @@ public class Carro {
 			System.exit(0);
 		}
 	}
-				/// INCLUIR CARRO
+	/// INCLUIR CARRO
 	public void incluir() {
 		String codCarroChave;
 		char confirmacao;
 		long posicaoRegistro;
-
+		int numCodAux;
+		boolean valido = false;
+		String letrasAux;
 		do {
 			do {
 				Main.leia.nextLine();
 				System.out.println("\n ***************  INCLUSAO DE CARRO ***************** ");
-				System.out.print("Digite o codigo do carro.( FIM para encerrar): ");
-				codCarroChave = Main.leia.nextLine();
+				do {
+
+					System.out.print("Digite o codigo do carro.( FIM para encerrar): ");
+					codCarroChave = Main.leia.nextLine();
+					try {
+						valido = true;
+						numCodAux = Integer.parseInt(codCarroChave.substring(3));
+					}catch(NumberFormatException e){
+						valido = false;
+						System.out.println("Formato Invalido, tente novamente.");
+					}
+					letrasAux = codCarroChave.substring(0,3);
+					valido = letrasAux.matches("[a-zA-Z]+");
+					if(!valido) {
+						System.out.println("Formato Invalido, tente novamente.");
+					}
+
+				}while(!valido);
 				if (codCarroChave.equals("FIM")) {
 					break;
 				}
@@ -123,27 +141,77 @@ public class Carro {
 
 			ativo = 'S';
 			codCarro = codCarroChave;
-			 
-			System.out.print("Digite a marca do carro:.........................: ");
-            marca = Main.leia.nextLine();
-            System.out.print("Digite o modelo do carro:.......: ");
-            modelo = Main.leia.nextLine();
-            System.out.print("Digite a fabricação do carro: (N - Nacional ou I - Importado)..................: ");
-            fabricacao = Main.leia.next().charAt(0);
+
+			do {
+				System.out.print("Digite a marca do carro:.........................: ");
+				marca = Main.leia.nextLine();
+				consistirMarca(marca);
+				if(consistirMarca(marca).equals("ERRO")){
+					System.out.println("Digite novamente, marca invalida");
+				}else {
+					origemMarca = consistirMarca(marca);
+				}
+			}while(consistirMarca(marca).equals("ERRO"));
+			do {
+				System.out.print("Digite o modelo do carro:.......: ");
+				modelo = Main.leia.nextLine();
+				if(modelo.length() < 5) {
+					System.out.println("O tamanho deve ser maior que 5 caracters.");
+				}
+			}while(modelo.length() < 5);
+			do {
+				System.out.print("Digite a fabricação do carro: (N - Nacional ou I - Importado)..................: ");
+				fabricacao = Main.leia.next().charAt(0);
+				if(fabricacao != 'N' && fabricacao != 'I') {
+					System.out.println("E aceito somente N ou I. Digite novamente");
+				}
+			}while(fabricacao != 'N' && fabricacao != 'I');
 			Main.leia.nextLine();
-            System.out.print("Digite a categoria do carro: (HATCH, SEDÃ, SUV, PICAPE ou ESPORTIVO)...................: ");
-            categoria = Main.leia.nextLine();
-            System.out.print("Digite a motorização do carro:..................: ");
-            motorizacao = Main.leia.nextFloat();
-            System.out.print("Digite a potencia do carro:..................: ");
-            potencia = Main.leia.nextInt();
-            System.out.print("Digite o peso do carro:..................: ");
-            peso = Main.leia.nextFloat();
-            System.out.print("Digite o preco do carro:..................: ");
-            preco = Main.leia.nextFloat();
-            Main.leia.nextLine(); // Consome a nova linha deixada por nextFloat
-            System.out.print("Digite o mes e ano de fabricação do carro:..................: ");
-            mesAnoFab = Main.leia.nextLine();
+			do {
+				System.out.print("Digite a categoria do carro: (HATCH, SEDÃ, SUV, PICAPE ou ESPORTIVO)...................: ");
+				categoria = Main.leia.nextLine();
+				if(!categoria.equals("HATCH") && !categoria.equals("SEDÃ")&& !categoria.equals("SUV")
+						&& !categoria.equals("PICAPE") && !categoria.equals("ESPORTIVO")){
+					System.out.println("Digite novamente, categorias nao permitidas.");
+				}
+			}while(!categoria.equals("HATCH") && !categoria.equals("SEDÃ")&& !categoria.equals("SUV")
+					&& !categoria.equals("PICAPE") && !categoria.equals("ESPORTIVO"));
+			do {
+				System.out.print("Digite a motorização do carro:..................: ");
+				motorizacao = Main.leia.nextFloat();
+				if(motorizacao < 1.0 || motorizacao > 5.0) {
+					System.out.println("O valor deve ser entre 1.0 e 5.0, digite novamente.");
+				}
+			}while(motorizacao < 1.0 || motorizacao > 5.0);
+			do {
+				System.out.print("Digite a potencia do carro:..................: ");
+				potencia = Main.leia.nextInt();
+				if(potencia <= 0) {
+					System.out.println("O valor deve ser acima de 0.");
+				}
+			}while(potencia <= 0);
+			do {
+				System.out.print("Digite o peso do carro:..................: ");
+				peso = Main.leia.nextFloat();
+				if(peso < 500) {
+					System.out.println("O valor minimo e 500KG, digite novamente.");
+				}
+			}while(peso < 500);
+			do {
+				System.out.print("Digite o preco do carro:..................: ");
+				preco = Main.leia.nextFloat();
+				if(preco <= 10000.00) {
+					System.out.println("O preco deve ser acima de 10000.00");
+				}
+			}while(preco <= 10000.00);
+			Main.leia.nextLine(); // Consome a nova linha deixada por nextFloat
+			do {
+				System.out.print("Digite o mes e ano de fabricação do carro:..................: ");
+				mesAnoFab = Main.leia.nextLine();
+				if(!consistirMesAnoFab(mesAnoFab)) {
+					System.out.println("Data invalida, tente novamente");
+				}
+			}while(!consistirMesAnoFab(mesAnoFab));
 
 			do {
 				System.out.print("\nConfirma a gravacao dos dados (S/N) ? ");
@@ -155,28 +223,35 @@ public class Carro {
 
 		} while (!codCarro.equals("FIM"));
 	}
-			/// ALTERAR CARRO
+	/// ALTERAR CARRO
 	public void alterarCarro() {
 		String codCarroChave;
 		char confirmacao;
 		long posicaoRegistro = 0;
 		byte opcao;
+		boolean valido;
+		int numCodAux;
+		String letrasAux;
 
 		do {
 			do {
 				Main.leia.nextLine();
 				System.out.println("\n ************  ALTERACAO DO CARRO  ************** ");
+
+
 				System.out.print("Digite o codigo do carro que deseja alterar( FIM para encerrar ): ");
 				codCarroChave = Main.leia.nextLine();
-				
+
+
+
 				if (codCarroChave.equals("FIM")) {
 					break;
 				}
 
 				posicaoRegistro = pesquisarCarro(codCarroChave);
-				 
+
 				if (posicaoRegistro == -1) {
-					System.out.println("Carro nao cadastrado no arquivo, digite outro valor\n");
+					System.out.print("Carro nao cadastrado no arquivo, digite outro valor: ");
 				}
 			} while (posicaoRegistro == -1);
 
@@ -185,7 +260,7 @@ public class Carro {
 			}
 
 			ativo = 'S';
-			
+
 			System.out.println("[ 1 ] Marca..........................: " + marca);
 			System.out.println("[ 2 ] Modelo ........................: " + modelo);
 			System.out.println("[ 3 ] Fabricacao.....................: " + fabricacao);
@@ -196,55 +271,106 @@ public class Carro {
 			System.out.println("[ 8 ] Preco..........................: " + preco);
 			System.out.println("[ 9 ] Mes e Ano de Fabricacao........: " + mesAnoFab);
 			do {
-				
+
 
 				do {
-					 
+
 					System.out.println("Digite o numero do campo que deseja alterar (0 para finalizar as alterações): ");
 					opcao = Main.leia.nextByte();
 				} while (opcao < 0 || opcao > 9);
 
 				Main.leia.nextLine();
 				switch (opcao) {
-					case 1:
-						Main.leia.nextLine();
-						System.out.print("Digite o NOVA MARCA do carro..................: ");
+				case 1:
+					Main.leia.nextLine();
+
+					do {
+						System.out.print("Digite a NOVA MARCA do carro:.........................: ");
 						marca = Main.leia.nextLine();
-						break;
-					case 2:
-						Main.leia.nextLine();
-						System.out.print("Digite a NOVO MODELO do carro: ");
+						consistirMarca(marca);
+						if(consistirMarca(marca).equals("ERRO")){
+							System.out.println("Digite novamente, marca invalida");
+						}else {
+							origemMarca = consistirMarca(marca);
+						}
+					}while(consistirMarca(marca).equals("ERRO"));
+					break;
+				case 2:
+					Main.leia.nextLine();
+					do {
+						System.out.print("Digite o NOVO MODELO do carro:.......: ");
 						modelo = Main.leia.nextLine();
-						break;
-					case 3:
-						System.out.print("Digite a NOVA FABRICACAO do carro...........: ");
-						fabricacao = Main.leia.next().charAt(0) ;
-						break;
-					case 4:
-						System.out.print("Digite a NOVA CATEGORIA do carro............: ");
+						if(modelo.length() < 5) {
+							System.out.println("O tamanho deve ser maior que 5 caracters.");
+						}
+					}while(modelo.length() < 5);
+					break;
+				case 3:
+					do {
+						System.out.print("Digite a NOVA FABRICACAO do carro: (N - Nacional ou I - Importado)..................: ");
+						fabricacao = Main.leia.next().charAt(0);
+						if(fabricacao != 'N' && fabricacao != 'I') {
+							System.out.println("E aceito somente N ou I. Digite novamente");
+						}
+					}while(fabricacao != 'N' && fabricacao != 'I');
+					break;
+				case 4:
+					do {
+						System.out.print("Digite NOVA CATEGORIA do carro: (HATCH, SEDÃ, SUV, PICAPE ou ESPORTIVO)...................: ");
 						categoria = Main.leia.nextLine();
-						break;
-					case 5:
-						System.out.print("Digite a NOVA MOTORIZACAO do carro..........: ");
+						if(!categoria.equals("HATCH") && !categoria.equals("SEDÃ")&& !categoria.equals("SUV")
+								&& !categoria.equals("PICAPE") && !categoria.equals("ESPORTIVO")){
+							System.out.println("Digite novamente, categorias nao permitidas.");
+						}
+					}while(!categoria.equals("HATCH") && !categoria.equals("SEDÃ")&& !categoria.equals("SUV")
+							&& !categoria.equals("PICAPE") && !categoria.equals("ESPORTIVO"));
+					break;
+				case 5:
+					do {
+						System.out.print("Digite a NOVA MOTORIZACAO do carro:..................: ");
 						motorizacao = Main.leia.nextFloat();
-						break;
-					case 6:
-						System.out.print("Digite a NOVA POTENCIA do carro.............: ");
+						if(motorizacao < 1.0 || motorizacao > 5.0) {
+							System.out.println("O valor deve ser entre 1.0 e 5.0, digite novamente.");
+						}
+					}while(motorizacao < 1.0 || motorizacao > 5.0);
+					break;
+				case 6:
+					do {
+						System.out.print("Digite a NOVA POTENCIA do carro:..................: ");
 						potencia = Main.leia.nextInt();
-						break;
-					case 7:
-						System.out.print("Digite o NOVO PESO do carro.................: ");
+						if(potencia <= 0) {
+							System.out.println("O valor deve ser acima de 0.");
+						}
+					}while(potencia <= 0);
+					break;
+				case 7:
+					do {
+						System.out.print("Digite o NOVO PESO do carro:..................: ");
 						peso = Main.leia.nextFloat();
-						break;
-					case 8:
-						System.out.print("Digite o NOVO PRECO do carro................: ");
+						if(peso < 500) {
+							System.out.println("O valor minimo e 500KG, digite novamente.");
+						}
+					}while(peso < 500);
+					break;
+				case 8:
+					do {
+						System.out.print("Digite o NOVO PRECO do carro:..................: ");
 						preco = Main.leia.nextFloat();
-						break;
-					case 9:
-						Main.leia.nextLine();
-						System.out.print("Digite o NOVO MES E ANO DE FABRICACAO do carro: ");
-						mesAnoFab = Main.leia.next();
-						break;
+						if(preco <= 10000.00) {
+							System.out.println("O preco deve ser acima de 10000.00");
+						}
+					}while(preco <= 10000.00);
+					break;
+				case 9:
+					Main.leia.nextLine();
+					do {
+						System.out.print("Digite o NOVO MES E ANO de fabricação do carro:..................: ");
+						mesAnoFab = Main.leia.nextLine();
+						if(!consistirMesAnoFab(mesAnoFab)) {
+							System.out.println("Data invalida, tente novamente");
+						}
+					}while(!consistirMesAnoFab(mesAnoFab));
+					break;
 				}
 				System.out.println();
 			} while (opcao != 0);
@@ -266,13 +392,32 @@ public class Carro {
 		String codCarroChave;
 		char confirmacao;
 		long posicaoRegistro = 0;
+		boolean valido;
+		int numCodAux;
+		String letrasAux;
 
 		do {
 			do {
 				Main.leia.nextLine();
 				System.out.println(" ***************  EXCLUSAO DE CARRO  ***************** ");
-				System.out.print("Digite o carro que deseja excluir ( FIM para encerrar ): ");
-				codCarroChave = Main.leia.nextLine();
+				do {
+
+					System.out.print("Digite o codigo do carro que deseja excluir ( FIM para encerrar ): ");
+					codCarroChave = Main.leia.nextLine();
+					try {
+						valido = true;
+						numCodAux = Integer.parseInt(codCarroChave.substring(3));
+					}catch(NumberFormatException e){
+						valido = false;
+						System.out.println("Formato Invalido, tente novamente.");
+					}
+					letrasAux = codCarroChave.substring(0,3);
+					valido = letrasAux.matches("[a-zA-Z]+");
+					if(!valido) {
+						System.out.println("Formato Invalido, tente novamente.");
+					}
+
+				}while(!valido);
 				if (codCarroChave.equals("FIM")) {
 					break;
 				}
@@ -320,7 +465,7 @@ public class Carro {
 		String marcaAux;
 		float precoMin, precoMax;
 		long posicaoRegistro;
-	
+
 		do {
 			do {
 				System.out.println(" ***************  CONSULTA DE CARROS  ***************** ");
@@ -330,177 +475,177 @@ public class Carro {
 				System.out.println("[4] - Listar todos os carros.");
 				System.out.println("[0] PARA FINALIZAR.\n");
 				opcao = Main.leia.nextByte();
-				
+
 				if (opcao < 0 || opcao > 4) {
 					System.out.println("Opção Inválida, digite novamente.\n");
 				}
 			} while (opcao < 0 || opcao > 4);
-	
+
 			switch (opcao) {
-				case 0:
-					System.out.println("\n ************  PROGRAMA ENCERRADO  ************** \n");
-					break;
-				case 1:
-					System.out.print("Digite a marca desejada: ");
-					marcaAux = Main.leia.nextLine();
-					try {
-						arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
-						imprimirCabecalho();
-						boolean encontrado = false;
-						while (true) {
-							ativo = arquivoCarro.readChar();
-							codCarro = arquivoCarro.readUTF();
-							marca = arquivoCarro.readUTF();
-							modelo = arquivoCarro.readUTF();
-							fabricacao = arquivoCarro.readChar();
-							origemMarca = arquivoCarro.readUTF();
-							categoria = arquivoCarro.readUTF();
-							motorizacao = arquivoCarro.readFloat();
-							potencia = arquivoCarro.readInt();
-							peso = arquivoCarro.readFloat();
-							preco = arquivoCarro.readFloat();
-							mesAnoFab = arquivoCarro.readUTF();
-	
-							if (marcaAux.equals(marca) && ativo == 'S') {
-								imprimirCarro();
-								encontrado = true;
-							}
+			case 0:
+				System.out.println("\n ************  PROGRAMA ENCERRADO  ************** \n");
+				break;
+			case 1:
+				System.out.print("Digite a marca desejada: ");
+				marcaAux = Main.leia.nextLine();
+				try {
+					arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+					imprimirCabecalho();
+					boolean encontrado = false;
+					while (true) {
+						ativo = arquivoCarro.readChar();
+						codCarro = arquivoCarro.readUTF();
+						marca = arquivoCarro.readUTF();
+						modelo = arquivoCarro.readUTF();
+						fabricacao = arquivoCarro.readChar();
+						origemMarca = arquivoCarro.readUTF();
+						categoria = arquivoCarro.readUTF();
+						motorizacao = arquivoCarro.readFloat();
+						potencia = arquivoCarro.readInt();
+						peso = arquivoCarro.readFloat();
+						preco = arquivoCarro.readFloat();
+						mesAnoFab = arquivoCarro.readUTF();
+
+						if (marcaAux.equals(marca) && ativo == 'S') {
+							imprimirCarro();
+							encontrado = true;
 						}
-					} catch (EOFException e) {
-						System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
-						Main.leia.nextLine();
-					} catch (IOException e) {
-						System.out.println("Erro na abertura do arquivo - programa será finalizado");
-						System.exit(0);
 					}
-					break;
-	
-				case 2:
-					System.out.print("Digite o ano de fabricação: ");
-					anoFabricacaoAux = Main.leia.next();
-					try {
-						arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
-						imprimirCabecalho();
-						boolean encontrado = false;
-						while (true) {
-							ativo = arquivoCarro.readChar();
-							codCarro = arquivoCarro.readUTF();
-							marca = arquivoCarro.readUTF();
-							modelo = arquivoCarro.readUTF();
-							fabricacao = arquivoCarro.readChar();
-							origemMarca = arquivoCarro.readUTF();
-							categoria = arquivoCarro.readUTF();
-							motorizacao = arquivoCarro.readFloat();
-							potencia = arquivoCarro.readInt();
-							peso = arquivoCarro.readFloat();
-							preco = arquivoCarro.readFloat();
-							mesAnoFab = arquivoCarro.readUTF();
-	
-							if (anoFabricacaoAux.equals(mesAnoFab.substring(mesAnoFab.length() - 4)) && ativo == 'S') {
-								imprimirCarro();
-								encontrado = true;
-							}
+				} catch (EOFException e) {
+					System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
+					Main.leia.nextLine();
+				} catch (IOException e) {
+					System.out.println("Erro na abertura do arquivo - programa será finalizado");
+					System.exit(0);
+				}
+				break;
+
+			case 2:
+				System.out.print("Digite o ano de fabricação: ");
+				anoFabricacaoAux = Main.leia.next();
+				try {
+					arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+					imprimirCabecalho();
+					boolean encontrado = false;
+					while (true) {
+						ativo = arquivoCarro.readChar();
+						codCarro = arquivoCarro.readUTF();
+						marca = arquivoCarro.readUTF();
+						modelo = arquivoCarro.readUTF();
+						fabricacao = arquivoCarro.readChar();
+						origemMarca = arquivoCarro.readUTF();
+						categoria = arquivoCarro.readUTF();
+						motorizacao = arquivoCarro.readFloat();
+						potencia = arquivoCarro.readInt();
+						peso = arquivoCarro.readFloat();
+						preco = arquivoCarro.readFloat();
+						mesAnoFab = arquivoCarro.readUTF();
+
+						if (anoFabricacaoAux.equals(mesAnoFab.substring(mesAnoFab.length() - 4)) && ativo == 'S') {
+							imprimirCarro();
+							encontrado = true;
 						}
-					} catch (EOFException e) {
-						System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
-						Main.leia.nextLine();
-					} catch (IOException e) {
-						System.out.println("Erro na abertura do arquivo - programa será finalizado");
-						System.exit(0);
 					}
-					break;
-	
-				case 3:
-					System.out.println("Digite a faixa de preço desejada: ");
-					System.out.print("Preço mínimo: ");
-					precoMin = Main.leia.nextFloat();
-					System.out.print("Preço máximo: ");
-					precoMax = Main.leia.nextFloat();
-					Main.leia.nextLine(); // Consome a nova linha deixada por nextFloat
-	
-					try {
-						arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
-						imprimirCabecalho();
-						boolean encontrado = false;
-						while (true) {
-							ativo = arquivoCarro.readChar();
-							codCarro = arquivoCarro.readUTF();
-							marca = arquivoCarro.readUTF();
-							modelo = arquivoCarro.readUTF();
-							fabricacao = arquivoCarro.readChar();
-							origemMarca = arquivoCarro.readUTF();
-							categoria = arquivoCarro.readUTF();
-							motorizacao = arquivoCarro.readFloat();
-							potencia = arquivoCarro.readInt();
-							peso = arquivoCarro.readFloat();
-							preco = arquivoCarro.readFloat();
-							mesAnoFab = arquivoCarro.readUTF();
-	
-							if (preco >= precoMin && preco <= precoMax && ativo == 'S') {
-								imprimirCarro();
-								encontrado = true;
-							}
+				} catch (EOFException e) {
+					System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
+					Main.leia.nextLine();
+				} catch (IOException e) {
+					System.out.println("Erro na abertura do arquivo - programa será finalizado");
+					System.exit(0);
+				}
+				break;
+
+			case 3:
+				System.out.println("Digite a faixa de preço desejada: ");
+				System.out.print("Preço mínimo: ");
+				precoMin = Main.leia.nextFloat();
+				System.out.print("Preço máximo: ");
+				precoMax = Main.leia.nextFloat();
+				Main.leia.nextLine(); // Consome a nova linha deixada por nextFloat
+
+				try {
+					arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+					imprimirCabecalho();
+					boolean encontrado = false;
+					while (true) {
+						ativo = arquivoCarro.readChar();
+						codCarro = arquivoCarro.readUTF();
+						marca = arquivoCarro.readUTF();
+						modelo = arquivoCarro.readUTF();
+						fabricacao = arquivoCarro.readChar();
+						origemMarca = arquivoCarro.readUTF();
+						categoria = arquivoCarro.readUTF();
+						motorizacao = arquivoCarro.readFloat();
+						potencia = arquivoCarro.readInt();
+						peso = arquivoCarro.readFloat();
+						preco = arquivoCarro.readFloat();
+						mesAnoFab = arquivoCarro.readUTF();
+
+						if (preco >= precoMin && preco <= precoMax && ativo == 'S') {
+							imprimirCarro();
+							encontrado = true;
 						}
-					} catch (EOFException e) {
-						System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
-						Main.leia.nextLine();
-					} catch (IOException e) {
-						System.out.println("Erro na abertura do arquivo - programa será finalizado");
-						System.exit(0);
 					}
-					break;
-	
-				case 4:
-					try {
-					 	arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
-						imprimirCabecalho();
-						while (true) {
-							ativo = arquivoCarro.readChar();
-							codCarro = arquivoCarro.readUTF();
-							marca = arquivoCarro.readUTF();
-							modelo = arquivoCarro.readUTF();
-							fabricacao = arquivoCarro.readChar();
-							origemMarca = arquivoCarro.readUTF();
-							categoria = arquivoCarro.readUTF();
-							motorizacao = arquivoCarro.readFloat();
-							potencia = arquivoCarro.readInt();
-							peso = arquivoCarro.readFloat();
-							preco = arquivoCarro.readFloat();
-							mesAnoFab = arquivoCarro.readUTF();
-							if (ativo == 'S') {
-								imprimirCarro();
-							}
+				} catch (EOFException e) {
+					System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
+					Main.leia.nextLine();
+				} catch (IOException e) {
+					System.out.println("Erro na abertura do arquivo - programa será finalizado");
+					System.exit(0);
+				}
+				break;
+
+			case 4:
+				try {
+					arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+					imprimirCabecalho();
+					while (true) {
+						ativo = arquivoCarro.readChar();
+						codCarro = arquivoCarro.readUTF();
+						marca = arquivoCarro.readUTF();
+						modelo = arquivoCarro.readUTF();
+						fabricacao = arquivoCarro.readChar();
+						origemMarca = arquivoCarro.readUTF();
+						categoria = arquivoCarro.readUTF();
+						motorizacao = arquivoCarro.readFloat();
+						potencia = arquivoCarro.readInt();
+						peso = arquivoCarro.readFloat();
+						preco = arquivoCarro.readFloat();
+						mesAnoFab = arquivoCarro.readUTF();
+						if (ativo == 'S') {
+							imprimirCarro();
 						}
-					} catch (EOFException e) {
-						System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
-						Main.leia.nextLine();
-					} catch (IOException e) {
-						System.out.println("Erro na abertura do arquivo - programa será finalizado");
-						System.exit(0);
 					}
-					break;
+				} catch (EOFException e) {
+					System.out.println("\n FIM DE RELATORIO - ENTER para continuar...\n");
+					Main.leia.nextLine();
+				} catch (IOException e) {
+					System.out.println("Erro na abertura do arquivo - programa será finalizado");
+					System.exit(0);
+				}
+				break;
 			}
 		} while (opcao != 0);
 	}
 
 	public void imprimirCabecalho() {
 		System.out.println(
-				"-CodCarro  --------  MARCA  --------  MODELO  --------  ORIGEM  --------  CATEGORIA  --------  MOTOR  --------  POTENCIA  --------  PESO  --------  PRECO  --------  MES/ANO FAB");
+				"-ATIVO  --------  CodCarro  --------  MARCA  --------  MODELO  -------- FABRICACAO  --------  ORIGEM  --------  CATEGORIA  --------  MOTORIZACAO  --------  POTENCIA  --------  PESO  --------  PRECO  --------  MES/ANO FAB");
 	}
 
 	public void imprimirCarro() {
-				System.out.println( formatarString(codCarro, 6) +"  --------  "+
-				formatarString(marca, marca.length()) +"  --------  "+
-				formatarString(modelo, modelo.length()) +"  --------  "+
-				formatarString( String.valueOf(fabricacao), String.valueOf(fabricacao).length()) +"  --------  "+
-				formatarString(origemMarca, origemMarca.length()) +"  --------  "+
-				formatarString(categoria, categoria.length()) +"  --------  "+
-				formatarString(String.valueOf(motorizacao), String.valueOf(motorizacao).length()) +"  --------  "+
-				formatarString(String.valueOf(potencia), String.valueOf(potencia).length()) +"  --------  "+
-				formatarString(String.valueOf(peso), String.valueOf(peso).length()) +"  --------  "+
-				formatarString(String.valueOf(preco), String.valueOf(preco).length()) +"  --------  "+
-				formatarString(mesAnoFab, 7));
-				 
+		System.out.println( "-  "+ formatarString(String.valueOf(ativo), 13)+"   "+formatarString(codCarro, 13) +"      "+
+				formatarString(marca, 13) +"    "+
+				formatarString(modelo, 13) +"        "+
+				formatarString( String.valueOf(fabricacao), 13) +"      "+
+				formatarString(origemMarca, 13) +"      "+
+				formatarString(categoria, 13) +"         "+
+				formatarString(String.valueOf(motorizacao), 13) +"          "+
+				formatarString(String.valueOf(potencia),13) +"     "+
+				formatarString(String.valueOf(peso), 13) +"   "+
+				formatarString(String.valueOf(preco), 13) +"      "+
+				formatarString(mesAnoFab, 13));
+
 	}
 
 	public static String formatarString(String texto, int tamanho) {
@@ -515,5 +660,54 @@ public class Carro {
 		}
 		return texto;
 	}
+	public static String consistirMarca(String marca) {
 
-}
+		String origemPais = " ";
+		String erro = "ERRO";
+		int salvarPosicao = 0;
+		for(int i = 0; i < 10; i++ ) {
+			marca.equals(marcas[i]);
+			if(marca.equals(marcas[i])) {
+				salvarPosicao = i;
+			}
+		}
+		if(marca.equals(marcas[salvarPosicao])) {
+			origemPais =  origens[salvarPosicao];
+			return origemPais;
+		}else {
+			return erro;
+		}
+
+	}
+	public static boolean consistirMesAnoFab(String mesAnoFab) {
+		 boolean valido;
+	        
+	        
+	        if (mesAnoFab == null || mesAnoFab.length() != 7) {
+	            return false;
+	        }
+	        
+	         
+	        if (!mesAnoFab.substring(2, 3).equals("/")) {
+	            return false;
+	        }
+
+	        
+	            int mes = Integer.parseInt(mesAnoFab.substring(0, 2));
+	            int ano = Integer.parseInt(mesAnoFab.substring(3));
+
+	            if (mes < 1 || mes > 12) {
+	                valido = false;
+	            } else if (ano < 1980 || ano > 2024) {
+	                valido = false;
+	            } else {
+	                valido = true;
+	            }
+	        
+	        return valido;
+	    }
+	}
+
+
+
+
