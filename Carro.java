@@ -12,7 +12,7 @@ public class Carro {
 	String marca;
 	String modelo;
 	char fabricacao;
-	String origemMarca;
+	String origemMarca = "JAPÃO";
 	String categoria;
 	float motorizacao;
 	int potencia;
@@ -24,21 +24,24 @@ public class Carro {
 		// metodo para localizar um registro no arquivo em disco
 		long posicaoCursorArquivo = 0;
 		try {
+			
 			RandomAccessFile arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+		   
 			while (true) {
+				
 				posicaoCursorArquivo = arquivoCarro.getFilePointer(); // posicao do inicio do registro no arquivo
-				ativo = arquivoCarro.readChar();
-				codCarro = arquivoCarro.readUTF();
-				marca = arquivoCarro.readUTF();
-				modelo = arquivoCarro.readUTF();
-				fabricacao = arquivoCarro.readChar();
+				ativo       = arquivoCarro.readChar();
+				codCarro    = arquivoCarro.readUTF();
+				marca       = arquivoCarro.readUTF();
+				modelo      = arquivoCarro.readUTF();
+				fabricacao  = arquivoCarro.readChar();
 				origemMarca = arquivoCarro.readUTF();
-				categoria = arquivoCarro.readUTF();
+				categoria   = arquivoCarro.readUTF();
 				motorizacao = arquivoCarro.readFloat();
-				potencia = arquivoCarro.readInt();
-				peso = arquivoCarro.readFloat();
-				preco = arquivoCarro.readFloat();
-				mesAnoFab = arquivoCarro.readUTF();
+				potencia    = arquivoCarro.readInt();
+				peso        = arquivoCarro.readFloat();
+				preco       = arquivoCarro.readFloat();
+				mesAnoFab   = arquivoCarro.readUTF();
 
 				if (_codCarro.equals(codCarro) && ativo == 'S') {
 					arquivoCarro.close();
@@ -63,7 +66,7 @@ public class Carro {
 			arquivoCarro.writeUTF(codCarro);
 			arquivoCarro.writeUTF(marca);
 			arquivoCarro.writeUTF(modelo);
-			arquivoCarro.writeFloat(fabricacao);
+			arquivoCarro.writeChar(fabricacao);
 			arquivoCarro.writeUTF(origemMarca);
 			arquivoCarro.writeUTF(categoria);
 			arquivoCarro.writeFloat(motorizacao);
@@ -92,7 +95,7 @@ public class Carro {
 			System.exit(0);
 		}
 	}
-
+				/// INCLUIR CARRO
 	public void incluir() {
 		String codCarroChave;
 		char confirmacao;
@@ -120,27 +123,27 @@ public class Carro {
 
 			ativo = 'S';
 			codCarro = codCarroChave;
+			 
 			System.out.print("Digite a marca do carro:.........................: ");
-			marca = Main.leia.nextLine();
-			System.out.print("Digite o modelo do carro:.......: ");
-			modelo = Main.leia.nextLine();
-			System.out.print("Digite a fabricação do carro: (N - Nacional ou I - Importado)..................: ");
-			fabricacao = Main.leia.next().charAt(0);
+            marca = Main.leia.nextLine();
+            System.out.print("Digite o modelo do carro:.......: ");
+            modelo = Main.leia.nextLine();
+            System.out.print("Digite a fabricação do carro: (N - Nacional ou I - Importado)..................: ");
+            fabricacao = Main.leia.next().charAt(0);
 			Main.leia.nextLine();
-			System.out
-					.print("Digite a categoria do carro: (HATCH, SEDÃ, SUV, PICAPE ou ESPORTIVO)...................: ");
-			categoria = Main.leia.nextLine();
-			System.out.print("Digite a motorização do carro:..................: ");
-			motorizacao = Main.leia.nextFloat();
-			System.out.print("Digite a potencia do carro:..................: ");
-			potencia = Main.leia.nextInt();
-			System.out.print("Digite o peso do carro:..................: ");
-			peso = Main.leia.nextFloat();
-			System.out.print("Digite o preco do carro:..................: ");
-			preco = Main.leia.nextFloat();
-			Main.leia.nextLine();
-			System.out.print("Digite o mes e ano de fabricação do carro:..................: ");
-			mesAnoFab = Main.leia.nextLine();
+            System.out.print("Digite a categoria do carro: (HATCH, SEDÃ, SUV, PICAPE ou ESPORTIVO)...................: ");
+            categoria = Main.leia.nextLine();
+            System.out.print("Digite a motorização do carro:..................: ");
+            motorizacao = Main.leia.nextFloat();
+            System.out.print("Digite a potencia do carro:..................: ");
+            potencia = Main.leia.nextInt();
+            System.out.print("Digite o peso do carro:..................: ");
+            peso = Main.leia.nextFloat();
+            System.out.print("Digite o preco do carro:..................: ");
+            preco = Main.leia.nextFloat();
+            Main.leia.nextLine(); // Consome a nova linha deixada por nextFloat
+            System.out.print("Digite o mes e ano de fabricação do carro:..................: ");
+            mesAnoFab = Main.leia.nextLine();
 
 			do {
 				System.out.print("\nConfirma a gravacao dos dados (S/N) ? ");
@@ -152,7 +155,7 @@ public class Carro {
 
 		} while (!codCarro.equals("FIM"));
 	}
-
+			/// ALTERAR CARRO
 	public void alterarCarro() {
 		String codCarroChave;
 		char confirmacao;
@@ -165,11 +168,13 @@ public class Carro {
 				System.out.println("\n ************  ALTERACAO DO CARRO  ************** ");
 				System.out.print("Digite o codigo do carro que deseja alterar( FIM para encerrar ): ");
 				codCarroChave = Main.leia.nextLine();
+				
 				if (codCarroChave.equals("FIM")) {
 					break;
 				}
 
 				posicaoRegistro = pesquisarCarro(codCarroChave);
+				 
 				if (posicaoRegistro == -1) {
 					System.out.println("Carro nao cadastrado no arquivo, digite outro valor\n");
 				}
@@ -180,24 +185,26 @@ public class Carro {
 			}
 
 			ativo = 'S';
-
+			
+			System.out.println("[ 1 ] Marca..........................: " + marca);
+			System.out.println("[ 2 ] Modelo ........................: " + modelo);
+			System.out.println("[ 3 ] Fabricacao.....................: " + fabricacao);
+			System.out.println("[ 4 ] Categoria......................: " + categoria);
+			System.out.println("[ 5 ] Motorizacao....................: " + motorizacao);
+			System.out.println("[ 6 ] Potencia.......................: " + potencia);
+			System.out.println("[ 7 ] Peso...........................: " + peso);
+			System.out.println("[ 8 ] Preco..........................: " + preco);
+			System.out.println("[ 9 ] Mes e Ano de Fabricacao........: " + mesAnoFab);
 			do {
-				System.out.println("[ 1 ] Marca..........................: " + marca);
-				System.out.println("[ 2 ] Modelo ........................: " + modelo);
-				System.out.println("[ 3 ] Fabricacao.....................: " + fabricacao);
-				System.out.println("[ 4 ] Categoria......................: " + categoria);
-				System.out.println("[ 5 ] Motorizacao....................: " + motorizacao);
-				System.out.println("[ 6 ] Potencia.......................: " + potencia);
-				System.out.println("[ 7 ] Peso...........................: " + peso);
-				System.out.println("[ 8 ] Preco..........................: " + preco);
-				System.out.println("[ 9 ] Mes e Ano de Fabricacao........: " + mesAnoFab);
+				
 
 				do {
-					System.out
-							.println("Digite o numero do campo que deseja alterar (0 para finalizar as alterações): ");
+					 
+					System.out.println("Digite o numero do campo que deseja alterar (0 para finalizar as alterações): ");
 					opcao = Main.leia.nextByte();
 				} while (opcao < 0 || opcao > 9);
 
+				Main.leia.nextLine();
 				switch (opcao) {
 					case 1:
 						Main.leia.nextLine();
@@ -211,7 +218,7 @@ public class Carro {
 						break;
 					case 3:
 						System.out.print("Digite a NOVA FABRICACAO do carro...........: ");
-						fabricacao = Main.leia.next().charAt(0);
+						fabricacao = Main.leia.next().charAt(0) ;
 						break;
 					case 4:
 						System.out.print("Digite a NOVA CATEGORIA do carro............: ");
@@ -236,7 +243,7 @@ public class Carro {
 					case 9:
 						Main.leia.nextLine();
 						System.out.print("Digite o NOVO MES E ANO DE FABRICACAO do carro: ");
-						mesAnoFab = Main.leia.nextLine();
+						mesAnoFab = Main.leia.next();
 						break;
 				}
 				System.out.println();
@@ -323,7 +330,7 @@ public class Carro {
 				System.out.println("[4] - Listar todos os carros.");
 				System.out.println("[0] PARA FINALIZAR.\n");
 				opcao = Main.leia.nextByte();
-				Main.leia.nextLine(); // Consome a nova linha deixada por nextByte
+				
 				if (opcao < 0 || opcao > 4) {
 					System.out.println("Opção Inválida, digite novamente.\n");
 				}
@@ -370,7 +377,7 @@ public class Carro {
 	
 				case 2:
 					System.out.print("Digite o ano de fabricação: ");
-					anoFabricacaoAux = Main.leia.nextLine();
+					anoFabricacaoAux = Main.leia.next();
 					try {
 						arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
 						imprimirCabecalho();
@@ -445,7 +452,7 @@ public class Carro {
 	
 				case 4:
 					try {
-						arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
+					 	arquivoCarro = new RandomAccessFile("CARROS.DAT", "rw");
 						imprimirCabecalho();
 						while (true) {
 							ativo = arquivoCarro.readChar();
@@ -482,17 +489,18 @@ public class Carro {
 	}
 
 	public void imprimirCarro() {
-		System.out.println(formatarString(codCarro, 6) + "  " +
-				formatarString(marca, marca.length()) + "  " +
-				formatarString(modelo, modelo.length()) + "  " +
-				formatarString(Character.toString(fabricacao), Character.toString(fabricacao).length()) + "  " +
-				formatarString(origemMarca, origemMarca.length()) + "  " +
-				formatarString(categoria, categoria.length()) + "  " +
-				formatarString(String.valueOf(motorizacao), String.valueOf(motorizacao).length()) + "  " +
-				formatarString(String.valueOf(potencia), String.valueOf(potencia).length()) + "  " +
-				formatarString(String.valueOf(peso), String.valueOf(peso).length()) + "  " +
-				formatarString(String.valueOf(preco), String.valueOf(preco).length()) + "  " +
+				System.out.println( formatarString(codCarro, 6) +"  --------  "+
+				formatarString(marca, marca.length()) +"  --------  "+
+				formatarString(modelo, modelo.length()) +"  --------  "+
+				formatarString( String.valueOf(fabricacao), String.valueOf(fabricacao).length()) +"  --------  "+
+				formatarString(origemMarca, origemMarca.length()) +"  --------  "+
+				formatarString(categoria, categoria.length()) +"  --------  "+
+				formatarString(String.valueOf(motorizacao), String.valueOf(motorizacao).length()) +"  --------  "+
+				formatarString(String.valueOf(potencia), String.valueOf(potencia).length()) +"  --------  "+
+				formatarString(String.valueOf(peso), String.valueOf(peso).length()) +"  --------  "+
+				formatarString(String.valueOf(preco), String.valueOf(preco).length()) +"  --------  "+
 				formatarString(mesAnoFab, 7));
+				 
 	}
 
 	public static String formatarString(String texto, int tamanho) {

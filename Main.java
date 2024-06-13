@@ -17,6 +17,7 @@ public class Main {
             System.out.println("[0] PARA FINALIZAR.\n");
             System.out.print("Digite a opção desejada: ");
             opcao = leia.nextByte();
+            
             if(opcao < 0 || opcao > 4 ){
                 System.out.println("Opção invalida, digite novamente.\n");
             }
